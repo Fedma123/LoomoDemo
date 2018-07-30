@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MyFirstApp</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send HTTP</string>
+    <string name="button_send_udp">Send UDP</string>
+    <string name="http_default_port">49000</string>
+    <string name="udp_default_port">49001</string>
+</resources>
