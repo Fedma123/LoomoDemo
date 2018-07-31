@@ -27,5 +27,6 @@ class UdpServer(threading.Thread):
             max_receive_size = 2 * 1280 * 720 * 3
             data, addr = self.sock.recvfrom(max_receive_size)
             result = self.image_process_callback(data)
+            print("Received UDP request from: %s" % addr[0])
 
             self.sock.sendto(result, addr)

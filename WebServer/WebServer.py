@@ -14,6 +14,7 @@ server = None
 
 @web_server.route("/", methods = ["POST"])
 def image_process():
+    print("Received HTTP request from: %s" % str(request.remote_addr))
     result = image_process_callback(request.data)
 
     response = make_response(result.tobytes())
