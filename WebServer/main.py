@@ -6,8 +6,8 @@ import UdpServer
 
 def process_image(img):
     raw_image_bytes = np.frombuffer(img, dtype=np.uint8)
-    image = cv2.imdecode(raw_image_bytes, cv2.IMREAD_COLOR)
-    canny_image = cv2.Canny(image, 30, 120)
+    image = cv2.imdecode(raw_image_bytes, cv2.IMREAD_COLOR)    
+    canny_image = cv2.Canny(image, 30, 120)    
     retval, encoded_png_canny = cv2.imencode(".png", canny_image)
     return encoded_png_canny
 
