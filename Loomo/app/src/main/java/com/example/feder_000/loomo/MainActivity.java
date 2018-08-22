@@ -1,8 +1,8 @@
 package com.example.feder_000.loomo;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.segway.robot.sdk.vision.Vision;
@@ -30,6 +30,9 @@ public class MainActivity extends Activity {
     private CameraView headCameraView;
     private ImageView headCameraImageView;
 
+    private long previousMillis;
+    private final long frame_grab_fps = 5;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,8 @@ public class MainActivity extends Activity {
         headCameraView.setCropOutput(false);
         headCameraView.setJpegQuality(50);
 
+        previousMillis = System.currentTimeMillis();
+
         headCameraImageView = (ImageView) findViewById(R.id.headCameraImageView);
         frameGrabTimer = new Timer();
 
@@ -56,7 +61,8 @@ public class MainActivity extends Activity {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
                if (cameraKitEvent.getType() == CameraKitEvent.TYPE_CAMERA_OPEN){
-                   frameGrabTimer.schedule(new FrameGrabber(headCameraView), 3000, 400);
+                   long period = (long)((1.0 / frame_grab_fps) * 1000);
+                   frameGrabTimer.schedule(new FrameGrabber(headCameraView), 3000, period);
                 }
             }
 
@@ -70,7 +76,13 @@ public class MainActivity extends Activity {
                 if (cameraKitImage != null){
                     byte[] jpegBytes = cameraKitImage.getJpeg();
 
-                    HttpNetworkTask nt = new HttpNetworkTask(jpegBytes, headCameraImageView);
+                    long currentMillis = System.currentTimeMillis();
+                    double fps = 1.0 / ((currentMillis - previousMillis) / 1000.0);
+                    previousMillis = currentMillis;
+                    Log.d("Debug", "Head FPS: " + new Float(fps).toString());
+
+                    //HttpBitmapNetworkTask nt = new HttpBitmapNetworkTask(jpegBytes, headCameraImageView);
+                    HttpJsonNetworkTask nt = new HttpJsonNetworkTask(jpegBytes, headCameraImageView);
                     nt.execute(serverHeadUrl);
                 }
             }

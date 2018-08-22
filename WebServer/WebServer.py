@@ -3,6 +3,8 @@ import sys
 import io
 import os
 import threading
+import datetime
+
 from cheroot.wsgi import PathInfoDispatcher
 from cheroot.wsgi import Server
 
@@ -16,10 +18,15 @@ server = None
 @web_server.route("/head", methods = ["POST"])
 def head_image_process():
     global head_process_callback
-    print("Received HTTP request to /head from: %s" % str(request.remote_addr))
+    #print("Received HTTP request to /head from: %s" % str(request.remote_addr))
+    start_time = datetime.datetime.now()
     result = head_process_callback(request.data)
+    end_time = datetime.datetime.now()
+    elapsed_time = end_time - start_time
+    elapsed_milliseconds = elapsed_time.microseconds / 1000 + elapsed_time.seconds * 1000
+    print("head elaboration time: %d ms" % elapsed_milliseconds)
 
-    response = make_response(result.tobytes())
+    response = make_response(result)
     response.headers.add("Content-Type", "image/png")
     response.status_code = 200
     return response
@@ -30,7 +37,7 @@ def front_image_process():
     print("Received HTTP request to /front from: %s" % str(request.remote_addr))
     result = front_process_callback(request.data)
 
-    response = make_response(result.tobytes())
+    response = make_response(result)
     response.headers.add("Content-Type", "image/png")
     response.status_code = 200
     return response

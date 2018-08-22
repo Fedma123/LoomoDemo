@@ -5,20 +5,21 @@ import queue
 import WebServer
 import UdpServer
 
-def process_head_image(img):        
-    raw_image_bytes = np.frombuffer(img, dtype=np.uint8)
-    image = cv2.imdecode(raw_image_bytes, cv2.IMREAD_COLOR)    
+def process_head_image(img):
+    #raw_image_bytes = np.frombuffer(img, dtype=np.uint8)
+    #image = cv2.imdecode(raw_image_bytes, cv2.IMREAD_COLOR)    
     #processed_image = cv2.Canny(image, 30, 120)    
-    processed_image = image
-    retval, encoded_png_canny = cv2.imencode(".jpg", processed_image)
-    return encoded_png_canny
+    ##processed_image = image
+    #retval, encoded_png_canny = cv2.imencode(".jpg", processed_image)
+    #return encoded_png_canny.tobytes()
+    return "OK"
 
 def process_front_image(img):        
     raw_image_bytes = np.frombuffer(img, dtype=np.uint8)
     image = cv2.imdecode(raw_image_bytes, cv2.IMREAD_COLOR)
     canny_image = cv2.Canny(image, 30, 120)    
     retval, encoded_png_canny = cv2.imencode(".png", canny_image)
-    return encoded_png_canny
+    return encoded_png_canny.tobytes()
 
 
 if __name__ == '__main__':

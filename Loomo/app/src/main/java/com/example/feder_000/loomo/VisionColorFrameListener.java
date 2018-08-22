@@ -18,7 +18,7 @@ public class VisionColorFrameListener implements Vision.FrameListener {
     final Bitmap mBitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
     ViewGroup.LayoutParams layout;
     private Integer frameCount;
-    private HttpNetworkTask httpNetworkTask;
+    private HttpBitmapNetworkTask httpNetworkTask;
     private URL serverUrl;
 
     public VisionColorFrameListener(Activity activity, ImageView imgView, URL serverUrl){
@@ -39,7 +39,7 @@ public class VisionColorFrameListener implements Vision.FrameListener {
                     //imgView.setImageBitmap(Bitmap.createScaledBitmap(mBitmap, imgView.getWidth(), imgView.getHeight(), true));
                     frameCount++;
 
-                    httpNetworkTask = new HttpNetworkTask(mBitmap, imgView);
+                    httpNetworkTask = new HttpBitmapNetworkTask(mBitmap, imgView);
                     httpNetworkTask.execute(serverUrl);
                 } catch (RuntimeException e){
                     Log.d("OnNewFrame", "Frame count " + frameCount.toString() + " " + e.getMessage());
