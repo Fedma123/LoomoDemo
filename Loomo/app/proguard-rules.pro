@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+#Rule for camerakit as stated in https://github.com/CameraKit/camerakit-android#proguard
+-dontwarn com.google.android.gms.**

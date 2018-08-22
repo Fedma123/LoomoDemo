@@ -22,6 +22,17 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
+    implementation ('com.wonderkiln:camerakit:0.13.1'){
+        exclude module: 'appcompat-v7'
+        exclude module: 'support-v4'
+        exclude group: 'com.android.support'
+    }
+    //Dipendenza necessaria per risolvere un eccezione che viene lanciata quando
+    //si chiama il metodo captureImage(): senza la dipendenza viene lanciata un'eccezione
+    // di tipo java.lang.ClassNotFoundException: Didn't find class "android.support.media.ExifInterface"
+    implementation 'com.android.support:exifinterface:26.0.0'
+
+
     implementation 'com.segway.robot:visionsdk:0.6.408'
     implementation 'com.segway.robot:speech-sdk:0.5.266'
     implementation 'com.segway.robot:headsdk:0.6.562'
@@ -31,8 +42,4 @@ dependencies {
     implementation 'com.segway.robot:mobile-connectivity-sdk:0.5.104'
     implementation 'com.segway.robot:emoji:0.1.18'
     implementation 'com.segway.robot:support-lib:1.1.2'
-
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
