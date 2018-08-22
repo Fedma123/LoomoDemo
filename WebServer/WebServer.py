@@ -8,14 +8,27 @@ from cheroot.wsgi import Server
 
 thismodule = sys.modules[__name__]
 web_server = Flask(__name__)
-image_process_callback = None
+head_process_callback = None
+front_process_callback = None
 listening = False
 server = None
 
-@web_server.route("/", methods = ["POST"])
-def image_process():
-    print("Received HTTP request from: %s" % str(request.remote_addr))
-    result = image_process_callback(request.data)
+@web_server.route("/head", methods = ["POST"])
+def head_image_process():
+    global head_process_callback
+    print("Received HTTP request to /head from: %s" % str(request.remote_addr))
+    result = head_process_callback(request.data)
+
+    response = make_response(result.tobytes())
+    response.headers.add("Content-Type", "image/png")
+    response.status_code = 200
+    return response
+
+@web_server.route("/front", methods = ["POST"])
+def front_image_process():
+    global front_process_callback
+    print("Received HTTP request to /front from: %s" % str(request.remote_addr))
+    result = front_process_callback(request.data)
 
     response = make_response(result.tobytes())
     response.headers.add("Content-Type", "image/png")
@@ -28,17 +41,19 @@ def stop_listening():
         server.stop()
         listening = False
 
-def start(ip, port, callback):    
+def start(ip, port, head_callback, front_callback):    
     global listening
     global server
-    global image_process_callback
+    global head_process_callback
+    global front_process_callback
 
     if hasattr(thismodule, "listening") and listening:
         return
 
-    image_process_callback = callback
-    
-    listening = True
+    head_process_callback = head_callback
+    front_process_callback = front_callback
+
+    listening = True    
 
     current_ip = os.environ.get('SERVER_HOST', str(ip))
     try:

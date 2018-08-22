@@ -23,7 +23,8 @@ public class MainActivity extends Activity {
     private Vision vision;
     private VisionServiceBindListener vsbListener;
     private VisionColorFrameListener vcfListener;
-    private URL serverUrl;
+    private URL serverHeadUrl;
+    private URL serverFrontUrl;
     private Timer frameGrabTimer;
 
     private CameraView headCameraView;
@@ -35,14 +36,18 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         try {
-            serverUrl = new URL("http://192.168.43.168:49000");
+            String serverIpAddress = "192.168.43.168";
+            String serverPort = "49000";
+            serverHeadUrl = new URL("http://" + serverIpAddress + ":" + serverPort + "/head");
+            serverFrontUrl = new URL("http://" + serverIpAddress + ":" + serverPort + "/front");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         headCameraView = (CameraView) findViewById(R.id.headCameraPreview);
         headCameraView.setMethod(CameraKit.Constants.METHOD_STILL);
-        headCameraView.setCropOutput(true);
+        headCameraView.setCropOutput(false);
+        headCameraView.setJpegQuality(50);
 
         headCameraImageView = (ImageView) findViewById(R.id.headCameraImageView);
         frameGrabTimer = new Timer();
@@ -51,7 +56,7 @@ public class MainActivity extends Activity {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
                if (cameraKitEvent.getType() == CameraKitEvent.TYPE_CAMERA_OPEN){
-                   frameGrabTimer.schedule(new FrameGrabber(headCameraView), 3000, 500);
+                   frameGrabTimer.schedule(new FrameGrabber(headCameraView), 3000, 400);
                 }
             }
 
@@ -63,10 +68,10 @@ public class MainActivity extends Activity {
             @Override
             public void onImage(CameraKitImage cameraKitImage) {
                 if (cameraKitImage != null){
-                    Bitmap bmp = cameraKitImage.getBitmap();
+                    byte[] jpegBytes = cameraKitImage.getJpeg();
 
-                    HttpNetworkTask nt = new HttpNetworkTask(bmp, headCameraImageView);
-                    nt.execute(serverUrl);
+                    HttpNetworkTask nt = new HttpNetworkTask(jpegBytes, headCameraImageView);
+                    nt.execute(serverHeadUrl);
                 }
             }
 
@@ -77,12 +82,12 @@ public class MainActivity extends Activity {
         });
 
         ImageView frontCameraImageView = (ImageView) findViewById(R.id.frontCameraImageView);
-        vcfListener = new VisionColorFrameListener(this, frontCameraImageView, serverUrl);
+        vcfListener = new VisionColorFrameListener(this, frontCameraImageView, serverFrontUrl);
 
         vision = Vision.getInstance();
 
         vsbListener = new VisionServiceBindListener(vision, vcfListener);
-        vision.bindService(getApplicationContext(), vsbListener);
+        //vision.bindService(getApplicationContext(), vsbListener);
     }
 
     @Override

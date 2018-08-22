@@ -10,10 +10,11 @@
     <ImageView
         android:id="@+id/frontCameraImageView"
         android:layout_width="274dp"
-        android:layout_height="138dp"
+        android:layout_height="9dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"
         android:src="@mipmap/ic_launcher"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -21,12 +21,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class HttpNetworkTask extends AsyncTask<URL, Void, Bitmap> {
-    Bitmap bmpImage;
+    byte[] jpegBytes;
+
     ImageView imgView;
     Context context;
 
-    HttpNetworkTask(Bitmap bmp, ImageView imgView){
-        bmpImage = bmp;
+    public HttpNetworkTask(Bitmap bmp, ImageView imgView){
+        this.imgView = imgView;
+        this.context = context;
+
+        ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 94, bmpStream);
+        jpegBytes = bmpStream.toByteArray();
+    }
+
+    public HttpNetworkTask(byte[] jpegBytes, ImageView imgView){
+        this.jpegBytes = jpegBytes;
         this.imgView = imgView;
         this.context = context;
     }
@@ -43,13 +53,8 @@ public class HttpNetworkTask extends AsyncTask<URL, Void, Bitmap> {
                 urlConnection.setConnectTimeout(5000);
                 urlConnection.setDoInput(true);
 
-
-                ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
-                bmpImage.compress(Bitmap.CompressFormat.JPEG, 94, bmpStream);
-                byte[] bmpBytes = bmpStream.toByteArray();
-
                 OutputStream os = urlConnection.getOutputStream();
-                os.write(bmpBytes);
+                os.write(jpegBytes);
                 os.close();
                 urlConnection.connect();
 
