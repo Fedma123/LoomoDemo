@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Loomo</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="intro_message">
+        <![CDATA[
+            This little demo is based on the Camera2Basics example by google and shows a way to send out frames
+            you get from the camera e.g for streaming.
+        ]]>
+    </string>
 </resources>
