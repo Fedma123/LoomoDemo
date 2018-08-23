@@ -34,8 +34,13 @@ def head_image_process():
 @web_server.route("/front", methods = ["POST"])
 def front_image_process():
     global front_process_callback
-    print("Received HTTP request to /front from: %s" % str(request.remote_addr))
+    #print("Received HTTP request to /front from: %s" % str(request.remote_addr))
+    start_time = datetime.datetime.now()
     result = front_process_callback(request.data)
+    end_time = datetime.datetime.now()
+    elapsed_time = end_time - start_time
+    elapsed_milliseconds = elapsed_time.microseconds / 1000 + elapsed_time.seconds * 1000
+    print("front elaboration time: %d ms" % elapsed_milliseconds)
 
     response = make_response(result)
     response.headers.add("Content-Type", "image/png")

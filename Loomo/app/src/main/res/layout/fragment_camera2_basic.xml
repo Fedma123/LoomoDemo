@@ -13,49 +13,47 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/relativeLayout">
+
+    <ImageView
+        android:id="@+id/headCameraImageView"
+        android:layout_width="266dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/frontCameraImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/frontCameraImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@mipmap/ic_launcher"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/headCameraImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.feder_000.loomo.AutoFitTextureView
         android:id="@+id/texture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_width="1px"
+        android:layout_height="1px"
+        />
 
-    <FrameLayout
-        android:id="@+id/control"
-        android:layout_width="match_parent"
-        android:layout_height="112dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
-
-        <!--<TextView-->
-            <!--android:id="@+id/picture"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:text="STREAM" />-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/info"-->
-            <!--android:contentDescription="@string/description_info"-->
-            <!--style="@android:style/Widget.Material.Light.Button.Borderless"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_vertical|right"-->
-            <!--android:padding="20dp"-->
-            <!--android:src="@drawable/ic_action_info" />-->
-
-
-        <!--<TextView-->
-            <!--android:id="@+id/set"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:text="STREAM" />-->
-
-    </FrameLayout>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

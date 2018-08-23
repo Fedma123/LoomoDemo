@@ -60,7 +60,11 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.segway.robot.sdk.vision.Vision;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -91,6 +95,11 @@ public class Camera2BasicFragment extends Fragment
 
     private URL serverHeadUrl;
     private URL serverFrontUrl;
+    private ImageView headCameraImageView;
+    private ImageView frontCameraImageView;
+    private Vision vision;
+    private VisionServiceBindListener vsbListener;
+    private VisionColorFrameListener vcfListener;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -275,7 +284,8 @@ public class Camera2BasicFragment extends Fragment
                 mBitmap = BitmapFactory.decodeByteArray(resultRGB, 0, resultRGB.length, options);
 
                 //mBackgroundHandler.post(new SendImageData(mBitmap));
-                HttpJsonNetworkTask nt = new HttpJsonNetworkTask(mBitmap, null);
+                //HttpJsonNetworkTask nt = new HttpJsonNetworkTask(mBitmap, headCameraImageView);
+                HttpBitmapNetworkTask nt = new HttpBitmapNetworkTask(mBitmap, headCameraImageView);
                 nt.execute(serverHeadUrl);
                 test.close();
             }
@@ -459,6 +469,9 @@ public class Camera2BasicFragment extends Fragment
             e.printStackTrace();
         }
 
+
+
+
         return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
 
     }
@@ -468,6 +481,15 @@ public class Camera2BasicFragment extends Fragment
         //view.findViewById(R.id.picture).setOnClickListener(this);
         //view.findViewById(R.id.info).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+        headCameraImageView = view.findViewById(R.id.headCameraImageView);
+        frontCameraImageView = getView().findViewById(R.id.frontCameraImageView);
+
+        vcfListener = new VisionColorFrameListener(getActivity(), frontCameraImageView, serverFrontUrl);
+
+        vision = Vision.getInstance();
+
+        vsbListener = new VisionServiceBindListener(vision, vcfListener);
+        //vision.bindService(getContext(), vsbListener);
     }
 
     @Override
@@ -567,6 +589,7 @@ public class Camera2BasicFragment extends Fragment
                         new CompareSizesByArea());
 
                 mImageReader = ImageReader.newInstance(smallest.getWidth(), smallest.getHeight(),
+                //mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
                         ImageFormat.JPEG, /*maxImages*/2);
                 mImageReader.setOnImageAvailableListener(
                         mOnImageAvailableListener, mBackgroundHandler);

@@ -31,21 +31,10 @@ public class VisionColorFrameListener implements Vision.FrameListener {
 
     @Override
     public void onNewFrame(int streamType, final Frame frame) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mBitmap.copyPixelsFromBuffer(frame.getByteBuffer());
-                    //imgView.setImageBitmap(Bitmap.createScaledBitmap(mBitmap, imgView.getWidth(), imgView.getHeight(), true));
-                    frameCount++;
+        mBitmap.copyPixelsFromBuffer(frame.getByteBuffer());
+        frameCount++;
 
-                    httpNetworkTask = new HttpBitmapNetworkTask(mBitmap, imgView);
-                    httpNetworkTask.execute(serverUrl);
-                } catch (RuntimeException e){
-                    Log.d("OnNewFrame", "Frame count " + frameCount.toString() + " " + e.getMessage());
-                    //throw e;
-                }
-            }
-        });
+        httpNetworkTask = new HttpBitmapNetworkTask(mBitmap, imgView);
+        httpNetworkTask.execute(serverUrl);
     }
 }
