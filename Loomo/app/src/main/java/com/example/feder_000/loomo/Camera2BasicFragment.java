@@ -61,12 +61,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.feder_000.loomo.HttpTask.HttpBitmapNetworkTask;
 import com.example.feder_000.loomo.HttpTask.HttpJsonNetworkTask;
 import com.example.feder_000.loomo.HttpTask.HttpStreamTask;
 import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.IOnPostExecuteStrategy;
-import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.LogReceivedJsonStrategy;
-import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.UpdateImageViewStrategy;
+import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.LogJsonUpdateAndTalkImageView;
 import com.segway.robot.sdk.vision.Vision;
 import com.segway.robot.sdk.voice.Speaker;
 import com.segway.robot.sdk.voice.VoiceException;
@@ -80,6 +78,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -287,8 +287,8 @@ public class Camera2BasicFragment extends Fragment
 
                 //mBackgroundHandler.post(new SendImageData(mBitmap));
                 //HttpJsonNetworkTask nt = new HttpJsonNetworkTask(mBitmap, headCameraImageView);
-                IOnPostExecuteStrategy strategy = new UpdateImageViewStrategy(headCameraImageView);
-                HttpStreamTask httpStreamTask = new HttpBitmapNetworkTask(strategy, serverHeadUrl, mBitmap);
+                IOnPostExecuteStrategy strategy = new LogJsonUpdateAndTalkImageView(headCameraImageView, speaker);
+                HttpStreamTask httpStreamTask = new HttpJsonNetworkTask(strategy, serverHeadUrl, mBitmap);
                 httpStreamTask.execute();
                 test.close();
             }
@@ -464,7 +464,7 @@ public class Camera2BasicFragment extends Fragment
                              Bundle savedInstanceState) {
 
         try {
-            String serverIpAddress = "192.168.1.3";
+            String serverIpAddress = "192.168.1.2";
             String serverPort = "49000";
             serverHeadUrl = new URL("http://" + serverIpAddress + ":" + serverPort + "/head");
             serverFrontUrl = new URL("http://" + serverIpAddress + ":" + serverPort + "/front");
@@ -472,11 +472,7 @@ public class Camera2BasicFragment extends Fragment
             e.printStackTrace();
         }
 
-
-
-
         return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
-
     }
 
     @Override
@@ -493,6 +489,7 @@ public class Camera2BasicFragment extends Fragment
 
         vision = Vision.getInstance();
         speaker = Speaker.getInstance();
+
 
         vsbListener = new VisionServiceBindListener(vision, vcfListener);
         sbListener = new SpeakerBindListener();

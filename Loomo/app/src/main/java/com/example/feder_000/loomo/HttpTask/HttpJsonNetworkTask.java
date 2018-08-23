@@ -1,13 +1,22 @@
 package com.example.feder_000.loomo.HttpTask;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.widget.ImageView;
 
+import com.alibaba.fastjson.util.IOUtils;
 import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.IOnPostExecuteStrategy;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class HttpJsonNetworkTask extends HttpStreamTask<String> {
 
@@ -37,8 +46,22 @@ public class HttpJsonNetworkTask extends HttpStreamTask<String> {
         super(executeStrategy, serverUrl, jpegBytes, jpegQuality);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public String decodeStream(InputStream inputStream) {
-        return new Scanner(inputStream).next();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int readBytes;
+        byte[] data = new byte[271360];
+        try {
+            while((readBytes = inputStream.read(data, 0, data.length)) != -1){
+                buffer.write(data, 0, readBytes);
+            }
+            buffer.flush();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return new String(buffer.toByteArray());
     }
 }

@@ -1,9 +1,11 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify
 import sys
 import io
 import os
 import threading
 import datetime
+import base64
+import json
 
 from cheroot.wsgi import PathInfoDispatcher
 from cheroot.wsgi import Server
@@ -26,10 +28,12 @@ def head_image_process():
     elapsed_milliseconds = elapsed_time.microseconds / 1000 + elapsed_time.seconds * 1000
     print("head elaboration time: %d ms" % elapsed_milliseconds)
 
-    response = make_response(result)
-    response.headers.add("Content-Type", "image/png")
-    response.status_code = 200
-    return response
+    result = {"text": "Text to speech",
+              "data": 123,
+              "image": base64.b64encode(result).decode('utf-8')
+              }
+
+    return jsonify(result)
 
 @web_server.route("/front", methods = ["POST"])
 def front_image_process():
