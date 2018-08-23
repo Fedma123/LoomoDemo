@@ -16,7 +16,6 @@
 
 package com.example.feder_000.loomo;
 
-import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -44,7 +43,6 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -63,15 +61,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.feder_000.loomo.HttpTask.HttpBitmapNetworkTask;
+import com.example.feder_000.loomo.HttpTask.HttpJsonNetworkTask;
+import com.example.feder_000.loomo.HttpTask.HttpStreamTask;
+import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.IOnPostExecuteStrategy;
+import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.LogReceivedJsonStrategy;
+import com.example.feder_000.loomo.HttpTask.PostExecuteStrategy.UpdateImageViewStrategy;
 import com.segway.robot.sdk.vision.Vision;
+import com.segway.robot.sdk.voice.Speaker;
+import com.segway.robot.sdk.voice.VoiceException;
+import com.segway.robot.sdk.voice.tts.TtsListener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -98,7 +98,9 @@ public class Camera2BasicFragment extends Fragment
     private ImageView headCameraImageView;
     private ImageView frontCameraImageView;
     private Vision vision;
+    private Speaker speaker;
     private VisionServiceBindListener vsbListener;
+    private SpeakerBindListener sbListener;
     private VisionColorFrameListener vcfListener;
 
     static {
@@ -285,8 +287,9 @@ public class Camera2BasicFragment extends Fragment
 
                 //mBackgroundHandler.post(new SendImageData(mBitmap));
                 //HttpJsonNetworkTask nt = new HttpJsonNetworkTask(mBitmap, headCameraImageView);
-                HttpBitmapNetworkTask nt = new HttpBitmapNetworkTask(mBitmap, headCameraImageView);
-                nt.execute(serverHeadUrl);
+                IOnPostExecuteStrategy strategy = new UpdateImageViewStrategy(headCameraImageView);
+                HttpStreamTask httpStreamTask = new HttpBitmapNetworkTask(strategy, serverHeadUrl, mBitmap);
+                httpStreamTask.execute();
                 test.close();
             }
         }
@@ -484,12 +487,17 @@ public class Camera2BasicFragment extends Fragment
         headCameraImageView = view.findViewById(R.id.headCameraImageView);
         frontCameraImageView = getView().findViewById(R.id.frontCameraImageView);
 
+        headCameraImageView.setOnClickListener(this);
+
         vcfListener = new VisionColorFrameListener(getActivity(), frontCameraImageView, serverFrontUrl);
 
         vision = Vision.getInstance();
+        speaker = Speaker.getInstance();
 
         vsbListener = new VisionServiceBindListener(vision, vcfListener);
+        sbListener = new SpeakerBindListener();
         //vision.bindService(getContext(), vsbListener);
+        speaker.bindService(getContext(), sbListener);
     }
 
     @Override
@@ -512,6 +520,8 @@ public class Camera2BasicFragment extends Fragment
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
+
+        headCameraImageView.setOnClickListener(this);
     }
 
     private void openCameraOrRequestPermission(int width, int height) {
@@ -900,7 +910,32 @@ public class Camera2BasicFragment extends Fragment
 
     @Override
     public void onClick(View view) {
+        try {
+            speaker.setVolume(100);
+        } catch (VoiceException e) {
+            e.printStackTrace();
+        }
 
+        try {
+            speaker.speak("Hello everybody!", new TtsListener() {
+                @Override
+                public void onSpeechStarted(String word) {
+
+                }
+
+                @Override
+                public void onSpeechFinished(String word) {
+
+                }
+
+                @Override
+                public void onSpeechError(String word, String reason) {
+
+                }
+            });
+        } catch (VoiceException e) {
+            e.printStackTrace();
+        }
     }
 
 
